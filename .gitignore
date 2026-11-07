@@ -1,1 +1,12 @@
+# entorno
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+.env
 
+# datos generados por el ETL (se regeneran con `python -m geih_bi.etl process`)
+data/processed/
+resultados.json*
