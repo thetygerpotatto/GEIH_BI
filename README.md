@@ -1,5 +1,20 @@
 # GEIH_BI
 
+> **EN:** A **Business Intelligence system for Colombia's labor market**, built on DANE's household survey
+> (*Gran Encuesta Integrada de Hogares*, 2022–2025).
+> - **ETL pipeline** (pandas + PyArrow): reads raw monthly ZIPs, including nested archives, mis-encoded filenames and
+>   inconsistent CSV separators. Joins 4 survey modules, types and cleans fields, derives indicators, and checks
+>   accounting identities (labor force = employed + unemployed).
+> - **Star-schema data warehouse in MongoDB**: a fact table of ~3.4M person-month records, 10 dimensions and a
+>   pre-aggregated monthly cube. Loads are idempotent and logged per run.
+> - **Dashboard** (Streamlit + Plotly) with **role-based access** (admin / analyst / manager). Unemployment,
+>   employment and participation rates are weighted by the official expansion factor (DANE methodology).
+> - **82 automated tests** (unit, integration, functional) with `pytest --cov`. MongoDB runs via Docker Compose.
+>
+> Stack: Python 3.11 · pandas · PyArrow · MongoDB · Streamlit · Plotly · Docker · pytest
+>
+> *The rest of this README is in Spanish.*
+
 Sistema de Business Intelligence para el análisis y predicción del mercado laboral en Colombia,
 a partir de la Gran Encuesta Integrada de Hogares (GEIH, DANE) 2022–2025.
 
