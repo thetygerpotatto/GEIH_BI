@@ -67,3 +67,14 @@ def indicators_from_sums(sums: dict[str, float], n_months: int = 1) -> LaborIndi
 def compute_indicators(df: pd.DataFrame) -> LaborIndicators:
     n_months = int(df[["anio", "mes"]].drop_duplicates().shape[0]) or 1
     return indicators_from_sums(weighted_sums(df), n_months)
+
+
+def add_rates(df: pd.DataFrame) -> pd.DataFrame:
+    """Agrega columnas td/to/tgp (en %) a un DataFrame de sumas ponderadas agrupadas."""
+    out = df.copy()
+    ft = out["w_ft"].where(out["w_ft"] > 0)
+    pet = out["w_pet"].where(out["w_pet"] > 0)
+    out["td"] = out["w_dsi"] / ft * 100
+    out["to"] = out["w_oci"] / pet * 100
+    out["tgp"] = out["w_ft"] / pet * 100
+    return out

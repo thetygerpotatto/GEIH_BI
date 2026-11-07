@@ -21,6 +21,7 @@ from geih_bi.etl.extract import MonthArchive, read_module_csv
 from geih_bi.etl.load import MongoLoader
 from geih_bi.etl.transform import transform_month
 from geih_bi.etl.validate import validate_month
+from geih_bi.models.repositories import QualityRepository
 
 logger = logging.getLogger(__name__)
 
@@ -140,5 +141,9 @@ class ETLPipeline:
             fact = pd.read_parquet(self.fact_path(periodo))
             cube = pd.read_parquet(self.cube_path(periodo))
             total += loader.load_month(fact, cube, periodo)
+        report_path = self.processed_dir / REPORT_FILE
+        if report_path.exists():
+            detail = json.loads(report_path.read_text(encoding="utf-8"))["detalle"]
+            QualityRepository(db).replace_all(detail)
         loader.log_run({"periodos": periods, "documentos": total})
         return total
