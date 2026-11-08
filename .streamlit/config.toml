@@ -1,0 +1,47 @@
+# Tema visual de GEIH BI. Los colores de las gráficas viven en geih_bi/views/charts.py
+# y deben coincidir con chartCategoricalColors.
+
+[browser]
+gatherUsageStats = false
+
+[client]
+# "viewer" muestra el menú ⋮ → Settings, donde se elige claro / oscuro / sistema.
+toolbarMode = "viewer"
+
+[theme]
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFontWeights = [700, 600, 600]
+metricValueFontWeight = 600
+baseRadius = "0.25rem"
+buttonRadius = "0.25rem"
+showWidgetBorder = true
+showSidebarBorder = true
+
+# Contraste WCAG verificado: texto ≥ 16:1, gris ≥ 7:1, primario con texto blanco ≥ 4.5:1.
+[theme.light]
+primaryColor = "#1f68c1"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f4f6f9"
+textColor = "#111827"
+grayColor = "#6b7280"
+grayTextColor = "#4b5563"
+borderColor = "#b9c7da"
+linkColor = "#1f63b8"
+chartCategoricalColors = ["#2a78d6", "#eb6834", "#8a8984"]
+
+[theme.light.sidebar]
+backgroundColor = "#f4f6f9"
+
+[theme.dark]
+primaryColor = "#2f74cc"
+backgroundColor = "#12161c"
+secondaryBackgroundColor = "#1c222b"
+textColor = "#e6e9ee"
+grayColor = "#9aa3af"
+grayTextColor = "#aab3bf"
+borderColor = "#3d5370"
+linkColor = "#8ab8f2"
+chartCategoricalColors = ["#5b9cec", "#f08a5d", "#a3a29d"]
+
+[theme.dark.sidebar]
+backgroundColor = "#1c222b"

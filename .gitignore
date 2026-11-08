@@ -10,3 +10,8 @@ htmlcov/
 # datos generados por el ETL (se regeneran con `python -m geih_bi.etl process`)
 data/processed/
 resultados.json*
+
+# Skills de terceros: nextlevelbuilder/ui-ux-pro-max-skill, pbakaus/impeccable, Leonxlnx/taste-skill
+.claude/skills/ui-ux-pro-max/
+.claude/skills/impeccable/
+.claude/skills/design-taste-frontend/

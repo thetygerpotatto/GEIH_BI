@@ -8,7 +8,7 @@ from geih_bi.core.permissions import Feature, has_feature
 from geih_bi.etl import catalogs
 from geih_bi.models.filters import DashboardFilters
 from geih_bi.models.user import User
-from geih_bi.views import charts
+from geih_bi.views import charts, ui
 from geih_bi.views.formatting import fmt_int, fmt_pct, fmt_pp, fmt_thousands
 
 FILTER_KEYS = ["f_anios", "f_meses", "f_dptos", "f_clases", "f_sexos", "f_edades", "f_educacion"]
@@ -30,7 +30,9 @@ def _filters(years: list[int]) -> DashboardFilters:
     if pending:
         st.session_state["f_dptos"] = [pending]
 
-    row1 = st.columns([1, 1.4, 1.6, 1.2])
+    box = st.container(border=True)
+    box.markdown(":material/filter_alt: **Filtros**")
+    row1 = box.columns([1, 1.4, 1.6, 1.2])
     anios = row1[0].multiselect("Año", years, key="f_anios", placeholder="Todos")
     meses = row1[1].multiselect("Mes", list(catalogs.MESES), key="f_meses",
                                 format_func=catalogs.MESES.get, placeholder="Todos")
@@ -38,13 +40,14 @@ def _filters(years: list[int]) -> DashboardFilters:
                                 format_func=catalogs.DEPARTAMENTOS.get, placeholder="Todos")
     clases = row1[3].multiselect("Zona", list(catalogs.CLASE), key="f_clases",
                                  format_func=catalogs.CLASE.get, placeholder="Todas")
-    row2 = st.columns([1, 1.4, 1.6, 1.2])
+    row2 = box.columns([1, 1.4, 1.6, 1.2], vertical_alignment="bottom")
     sexos = row2[0].multiselect("Sexo", list(catalogs.SEXO), key="f_sexos",
                                 format_func=catalogs.SEXO.get, placeholder="Todos")
     edades = row2[1].multiselect("Rango de edad", EDADES, key="f_edades", placeholder="Todos")
     educacion = row2[2].multiselect("Nivel educativo", GRUPOS_EDUCATIVOS, key="f_educacion",
                                     format_func=catalogs.GRUPO_EDUCATIVO.get, placeholder="Todos")
-    row2[3].button("Limpiar filtros", on_click=_reset_filters, args=(default_year,), width="stretch")
+    row2[3].button("Limpiar filtros", on_click=_reset_filters, args=(default_year,), width="stretch",
+                   icon=":material/filter_alt_off:")
 
     return DashboardFilters(
         anios=tuple(anios), meses=tuple(meses), dptos=tuple(dptos), clases=tuple(clases),
@@ -64,17 +67,18 @@ def _kpis(controller: DashboardController, filters: DashboardFilters):
     comparison = "frente al mismo periodo del año anterior" if summary.anterior else ""
     cols = st.columns(3)
     cols[0].metric("Tasa de desempleo (TD)", fmt_pct(ind.td), fmt_pp(summary.variacion("td")),
-                   delta_color="inverse", help=f"Desocupados / fuerza de trabajo. Variación {comparison}.")
-    cols[1].metric("Tasa de ocupación (TO)", fmt_pct(ind.to), fmt_pp(summary.variacion("to")),
+                   delta_color="inverse", border=True,
+                   help=f"Desocupados / fuerza de trabajo. Variación {comparison}.")
+    cols[1].metric("Tasa de ocupación (TO)", fmt_pct(ind.to), fmt_pp(summary.variacion("to")), border=True,
                    help=f"Ocupados / población en edad de trabajar. Variación {comparison}.")
     cols[2].metric("Tasa global de participación (TGP)", fmt_pct(ind.tgp), fmt_pp(summary.variacion("tgp")),
-                   help=f"Fuerza de trabajo / población en edad de trabajar. Variación {comparison}.")
+                   border=True, help=f"Fuerza de trabajo / población en edad de trabajar. Variación {comparison}.")
     cols = st.columns(3)
     note = " (promedio mensual)" if summary.meses > 1 else ""
-    cols[0].metric(f"Ocupados{note}", fmt_thousands(ind.ocupados))
-    cols[1].metric(f"Desocupados{note}", fmt_thousands(ind.desocupados))
-    cols[2].metric(f"Fuera de la fuerza de trabajo{note}", fmt_thousands(ind.inactivos))
-    st.caption(f"{summary.meses} mes(es) · {fmt_int(summary.muestra)} encuestados · "
+    cols[0].metric(f"Ocupados{note}", fmt_thousands(ind.ocupados), border=True)
+    cols[1].metric(f"Desocupados{note}", fmt_thousands(ind.desocupados), border=True)
+    cols[2].metric(f"Fuera de la fuerza de trabajo{note}", fmt_thousands(ind.inactivos), border=True)
+    ui.note(f"{summary.meses} mes(es) · {fmt_int(summary.muestra)} encuestados · "
                "cifras expandidas con el factor FEX_C18 · Fuente: DANE, GEIH.")
     return summary
 
@@ -83,7 +87,7 @@ def _monthly_chart(controller: DashboardController, filters: DashboardFilters) -
     series = controller.monthly_series(filters)
     if series.empty:
         return
-    st.plotly_chart(charts.monthly_rates(series), width="stretch", key="g_mensual")
+    st.plotly_chart(charts.monthly_rates(series, dark=ui.is_dark()), width="stretch", key="g_mensual")
     with st.expander("Ver datos de la serie mensual"):
         st.dataframe(series[["periodo", "td", "to", "tgp"]].rename(
             columns={"periodo": "Periodo", "td": "TD (%)", "to": "TO (%)", "tgp": "TGP (%)"}),
@@ -94,7 +98,8 @@ def _department_chart(controller: DashboardController, filters: DashboardFilters
     df = controller.by_department(filters)
     if df.empty:
         return
-    event = st.plotly_chart(charts.department_unemployment(df, national_td), width="stretch",
+    st.subheader("Desempleo por departamento")
+    event = st.plotly_chart(charts.department_unemployment(df, national_td, dark=ui.is_dark()), width="stretch",
                             key="g_dptos", on_select="rerun", selection_mode="points")
     points = (event or {}).get("selection", {}).get("points", []) if event else []
     if points:
@@ -103,7 +108,7 @@ def _department_chart(controller: DashboardController, filters: DashboardFilters
         if dpto and st.session_state.get("f_dptos") != [dpto]:
             st.session_state[_PENDING_DPTO] = dpto
             st.rerun()
-    st.caption("Haga clic en una barra para filtrar por ese departamento. "
+    ui.note("Haga clic en una barra para filtrar por ese departamento. "
                f"Se omiten departamentos con menos de {MIN_SAMPLE} encuestados.")
     with st.expander("Ver datos por departamento"):
         st.dataframe(df[["departamento", "td", "to", "tgp", "n"]].rename(columns={
@@ -115,7 +120,8 @@ def _sex_age_chart(controller: DashboardController, filters: DashboardFilters) -
     df = controller.by_sex_and_age(filters)
     if df.empty:
         return
-    st.plotly_chart(charts.unemployment_by_sex_age(df), width="stretch", key="g_sexo_edad")
+    st.subheader("Desempleo por sexo y edad")
+    st.plotly_chart(charts.unemployment_by_sex_age(df, dark=ui.is_dark()), width="stretch", key="g_sexo_edad")
     with st.expander("Ver datos por sexo y edad"):
         st.dataframe(df[["sexo_nombre", "rango_edad", "td", "n"]].rename(columns={
             "sexo_nombre": "Sexo", "rango_edad": "Rango de edad", "td": "TD (%)", "n": "Encuestados"}),
@@ -124,22 +130,24 @@ def _sex_age_chart(controller: DashboardController, filters: DashboardFilters) -
 
 def render(controller: DashboardController, user: User) -> None:
     st.title("Tablero del mercado laboral")
+    ui.subtitle("Indicadores del mercado laboral colombiano según la metodología del DANE.")
     years = controller.available_years()
     if not years:
         st.error("No hay datos cargados. Un administrador debe ejecutar el proceso ETL.")
         return
     filters = _filters(years)
-    st.divider()
     summary = _kpis(controller, filters)
     if summary is None:
         return
-    st.subheader("Evolución mensual 2022–2025")
-    _monthly_chart(controller, filters)
+    with st.container(border=True):
+        st.subheader("Evolución mensual 2022–2025")
+        _monthly_chart(controller, filters)
     if has_feature(user.rol, Feature.GRAFICA_SEXO_EDAD):
         left, right = st.columns([1.1, 1])
-        with left:
+        with left.container(border=True):
             _department_chart(controller, filters, summary.actual.td)
-        with right:
+        with right.container(border=True):
             _sex_age_chart(controller, filters)
     else:
-        _department_chart(controller, filters, summary.actual.td)
+        with st.container(border=True):
+            _department_chart(controller, filters, summary.actual.td)
