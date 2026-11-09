@@ -32,7 +32,7 @@ Como **usuario del sistema** deseo iniciar sesión con mi usuario y contraseña,
 - Las contraseñas se almacenan cifradas (bcrypt), nunca en texto plano.
 - Ninguna página del dashboard es accesible sin sesión activa.
 
-Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Hecha
 
 ### Historia de usuario: 2. Menú según rol
 Como **usuario autenticado** deseo ver un menú con las opciones de mi rol, para encontrar rápidamente lo que puedo hacer.
@@ -41,7 +41,7 @@ Como **usuario autenticado** deseo ver un menú con las opciones de mi rol, para
 - El menú del Administrador, del Analista y del Gerente muestra únicamente las opciones de la matriz de acceso (ver final del documento).
 - Si un usuario intenta abrir una página que no corresponde a su rol, se le niega el acceso y se registra el intento.
 
-Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: En progreso (el menú muestra solo las páginas del rol y las demás no se pueden abrir; falta registrar los intentos de acceso a páginas no permitidas)
 
 ### Historia de usuario: 3. Cerrar sesión
 Como **usuario autenticado** deseo cerrar sesión, para que nadie más use mi cuenta en el equipo.
@@ -50,7 +50,7 @@ Como **usuario autenticado** deseo cerrar sesión, para que nadie más use mi cu
 - Al cerrar sesión se invalida la sesión y se regresa a la pantalla de inicio de sesión.
 - La sesión expira automáticamente tras 30 minutos de inactividad.
 
-Prioridad: Media · Estimación: 1 · Iteración: 1 · Estado: Pendiente
+Prioridad: Media · Estimación: 1 · Iteración: 1 · Estado: Hecha
 
 ---
 
@@ -64,7 +64,7 @@ Como **administrador** deseo crear usuarios y asignarles un rol, para controlar 
 - No se permite crear un usuario con un nombre ya existente.
 - El nuevo usuario puede iniciar sesión inmediatamente con el rol asignado.
 
-Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Hecha (también por CLI `python -m geih_bi.cli create-user`)
 
 ### Historia de usuario: 5. Editar y desactivar usuarios
 Como **administrador** deseo editar el rol de un usuario o desactivarlo, para mantener actualizados los permisos del equipo.
@@ -73,7 +73,7 @@ Como **administrador** deseo editar el rol de un usuario o desactivarlo, para ma
 - Un usuario desactivado no puede iniciar sesión.
 - El administrador no puede desactivarse a sí mismo ni dejar el sistema sin administradores.
 
-Prioridad: Media · Estimación: 2 · Iteración: 2 · Estado: Pendiente
+Prioridad: Media · Estimación: 2 · Iteración: 2 · Estado: En progreso (el controlador ya desactiva usuarios con sus reglas y el login rechaza a los inactivos; falta la vista y la edición del rol)
 
 ### Historia de usuario: 6. Procesar los archivos de la GEIH
 Como **administrador** deseo ejecutar la extracción y transformación de los archivos mensuales del DANE, para preparar los datos de 2022 a 2025 sin hacerlo a mano.
@@ -83,7 +83,7 @@ Como **administrador** deseo ejecutar la extracción y transformación de los ar
 - Se integran los módulos Características generales, Fuerza de trabajo, Ocupados y No ocupados por persona.
 - El resultado tiene al menos 1.000.000 de registros.
 
-Prioridad: Alta · Estimación: 8 · Iteración: 1 · Estado: Hecha (CLI `python -m geih_bi.etl process`)
+Prioridad: Alta · Estimación: 8 · Iteración: 1 · Estado: Hecha (CLI `python -m geih_bi.etl process`; 48 meses, 3.427.494 registros)
 
 ### Historia de usuario: 7. Cargar los datos a MongoDB
 Como **administrador** deseo cargar los datos procesados en la base de datos, para que el dashboard los consulte.
@@ -102,7 +102,7 @@ Como **administrador** deseo ver un informe de calidad por mes, para saber si lo
 - Por cada mes se muestran: filas de entrada por módulo, duplicados eliminados, registros huérfanos, registros sin factor de expansión, valores anulados, filas de salida y TD calculada.
 - Se resaltan los meses que no superan las reglas de validación (FT = OCI + DSI, ocupados dentro de la PET, TD plausible).
 
-Prioridad: Media · Estimación: 3 · Iteración: 1 · Estado: En progreso (el informe JSON existe; falta la vista)
+Prioridad: Media · Estimación: 3 · Iteración: 1 · Estado: En progreso (la vista "Calidad de datos" ya existe; falta mostrar las filas de entrada de Fuerza de trabajo, Ocupados y No ocupados, hoy solo muestra Características)
 
 ### Historia de usuario: 9. Bitácora del sistema
 Como **administrador** deseo consultar la bitácora de ejecuciones ETL y de inicios de sesión, para auditar el uso del sistema.
@@ -111,7 +111,7 @@ Como **administrador** deseo consultar la bitácora de ejecuciones ETL y de inic
 - Se listan fecha, usuario y resultado de cada inicio de sesión (exitoso o fallido).
 - Se listan fecha, periodos y documentos de cada ejecución ETL.
 
-Prioridad: Baja · Estimación: 2 · Iteración: 2 · Estado: Pendiente
+Prioridad: Baja · Estimación: 2 · Iteración: 2 · Estado: En progreso (los inicios de sesión y las cargas ETL ya se registran en `bitacora_accesos` y `etl_ejecuciones`; falta la vista)
 
 ---
 
@@ -124,7 +124,7 @@ Como **gerente** deseo ver la tasa de desempleo (TD), la tasa de ocupación (TO)
 - Se muestran como tarjetas con su valor en porcentaje y la variación frente al mismo mes del año anterior.
 - Los valores nacionales coinciden con los boletines del DANE (±0,1 p.p.).
 
-Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Hecha (TD nacional calculada: ene-2024 12,7 %, dic-2024 9,1 %, ene-2025 11,6 %)
 
 ### Historia de usuario: 11. Población por condición laboral
 Como **gerente** deseo ver cuántas personas están ocupadas, desocupadas y fuera de la fuerza de trabajo, para dimensionar el tamaño de cada grupo.
@@ -133,7 +133,7 @@ Como **gerente** deseo ver cuántas personas están ocupadas, desocupadas y fuer
 - Se muestran las cifras expandidas (en miles de personas).
 - Si se seleccionan varios meses, se muestra el promedio mensual.
 
-Prioridad: Alta · Estimación: 2 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 2 · Iteración: 1 · Estado: Hecha
 
 ### Historia de usuario: 12. Ingreso laboral
 Como **analista** deseo ver el ingreso laboral promedio y mediano de los ocupados, para analizar las condiciones salariales.
@@ -142,7 +142,7 @@ Como **analista** deseo ver el ingreso laboral promedio y mediano de los ocupado
 - Solo se consideran ocupados con ingreso mayor a cero.
 - Ambas cifras están ponderadas por el factor de expansión.
 
-Prioridad: Media · Estimación: 3 · Iteración: 2 · Estado: Pendiente
+Prioridad: Media · Estimación: 3 · Iteración: 2 · Estado: Pendiente (el cubo ya trae las sumas de ingreso; la mediana tendrá que calcularse sobre `personas_mes`)
 
 ### Historia de usuario: 13. Tasa de informalidad
 Como **gerente** deseo ver el porcentaje de ocupados que no cotizan a pensión, para identificar la magnitud de la informalidad laboral.
@@ -151,7 +151,7 @@ Como **gerente** deseo ver el porcentaje de ocupados que no cotizan a pensión, 
 - Se calcula sobre los ocupados con dato de cotización; los pensionados se cuentan como formales.
 - Se indica en pantalla que es una aproximación (proxy) a la definición oficial del DANE.
 
-Prioridad: Media · Estimación: 2 · Iteración: 2 · Estado: Pendiente
+Prioridad: Media · Estimación: 2 · Iteración: 2 · Estado: Pendiente (el ETL ya calcula `informal` y el cubo trae sus sumas)
 
 ### Historia de usuario: 14. Horas trabajadas y duración del desempleo
 Como **analista** deseo ver las horas semanales promedio trabajadas por los ocupados y las semanas promedio que llevan buscando empleo los desocupados, para analizar la intensidad del trabajo y la dificultad para conseguir empleo.
@@ -160,7 +160,7 @@ Como **analista** deseo ver las horas semanales promedio trabajadas por los ocup
 - Se excluyen valores fuera de rango (más de 130 horas semanales o negativos).
 - Ambas métricas responden a los filtros activos.
 
-Prioridad: Media · Estimación: 2 · Iteración: 2 · Estado: Pendiente
+Prioridad: Media · Estimación: 2 · Iteración: 2 · Estado: Pendiente (el ETL ya anula horas negativas o mayores a 130 y el cubo trae las sumas)
 
 ### Historia de usuario: 15. Brecha de género
 Como **gerente** deseo ver la diferencia de la tasa de desempleo entre mujeres y hombres, para evaluar la equidad en el mercado laboral.
@@ -182,7 +182,7 @@ Como **gerente** deseo filtrar por año y mes, para analizar un periodo específ
 - Filtros: año (2022–2025) y mes (1–12), con selección múltiple.
 - Todas las métricas y gráficas de la página se actualizan al cambiar el filtro.
 
-Prioridad: Alta · Estimación: 2 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 2 · Iteración: 1 · Estado: Hecha
 
 ### Historia de usuario: 17. Filtrar por ubicación
 Como **gerente** deseo filtrar por departamento y por zona (cabecera o rural), para comparar territorios.
@@ -191,7 +191,7 @@ Como **gerente** deseo filtrar por departamento y por zona (cabecera o rural), p
 - Filtros: departamento (33 opciones con su nombre) y zona (cabecera / centros poblados y rural disperso).
 - Si un filtro deja muestra insuficiente (menos de 30 encuestados), se muestra una advertencia.
 
-Prioridad: Alta · Estimación: 2 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 2 · Iteración: 1 · Estado: Hecha
 
 ### Historia de usuario: 18. Filtrar por características demográficas
 Como **analista** deseo filtrar por sexo, rango de edad y nivel educativo, para analizar grupos poblacionales.
@@ -200,7 +200,7 @@ Como **analista** deseo filtrar por sexo, rango de edad y nivel educativo, para 
 - Filtros: sexo, rango de edad (15–28, 29–44, 45–59, 60+) y grupo educativo.
 - Los filtros se combinan entre sí (operación Y).
 
-Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Hecha
 
 ### Historia de usuario: 19. Filtrar por características del empleo
 Como **analista** deseo filtrar por rama de actividad económica, posición ocupacional y tamaño de empresa, para analizar a los ocupados por sector.
@@ -217,7 +217,7 @@ Como **usuario del dashboard** deseo restablecer todos los filtros con un botón
 **Criterios de aceptación**
 - Un clic devuelve los 10 filtros a su valor por defecto (todos los valores, último año disponible).
 
-Prioridad: Baja · Estimación: 1 · Iteración: 1 · Estado: Pendiente
+Prioridad: Baja · Estimación: 1 · Iteración: 1 · Estado: Hecha (restablece los 7 filtros actuales; los 3 de la HU 19 se agregarán al implementarla)
 
 ---
 
@@ -230,7 +230,7 @@ Como **gerente** deseo ver una gráfica de líneas de la TD, TO y TGP mes a mes 
 - Eje X con los 48 meses; al pasar el cursor se ve el valor exacto.
 - La gráfica responde a los filtros activos.
 
-Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 3 · Iteración: 1 · Estado: Hecha
 
 ### Historia de usuario: 22. Desempleo por departamento
 Como **gerente** deseo ver la tasa de desempleo por departamento en un mapa o gráfica de barras ordenada, para identificar las regiones más afectadas.
@@ -239,7 +239,7 @@ Como **gerente** deseo ver la tasa de desempleo por departamento en un mapa o gr
 - Los departamentos se ordenan de mayor a menor TD.
 - Se puede seleccionar un departamento desde la gráfica para aplicarlo como filtro.
 
-Prioridad: Alta · Estimación: 5 · Iteración: 1 · Estado: Pendiente
+Prioridad: Alta · Estimación: 5 · Iteración: 1 · Estado: Hecha
 
 ### Historia de usuario: 23. Desempleo por sexo y edad
 Como **analista** deseo ver una gráfica de la TD por rango de edad separada por sexo, para identificar los grupos más vulnerables, como los jóvenes.
@@ -247,7 +247,7 @@ Como **analista** deseo ver una gráfica de la TD por rango de edad separada por
 **Criterios de aceptación**
 - Barras agrupadas por rango de edad, con una serie por sexo.
 
-Prioridad: Media · Estimación: 3 · Iteración: 1 · Estado: Pendiente
+Prioridad: Media · Estimación: 3 · Iteración: 1 · Estado: Hecha (visible solo para el rol Analista)
 
 ### Historia de usuario: 24. Ocupados por rama de actividad
 Como **gerente** deseo ver la distribución de los ocupados por rama de actividad económica, para conocer qué sectores generan más empleo.
@@ -355,3 +355,11 @@ Prioridad: Baja · Estimación: 2 · Iteración: 2 · Estado: Pendiente
 |---|---|---|:-:|
 | 1 | 9–12 (entrega 09-11-2026) | 1, 2, 3, 4, 6, 7, 8, 10, 11, 16, 17, 18, 20, 21, 22, 23 | 16 |
 | 2 | 13–16 (entrega 09-12-2026) | 5, 9, 12, 13, 14, 15, 19, 24, 25, 26, 27, 28, 29, 30 | 14 |
+
+## Avance (revisado el 09-11-2026)
+
+| Iteración | Hechas | En progreso | Pendientes |
+|---|---|---|---|
+| 1 | 14 de 16: 1, 3, 4, 6, 7, 10, 11, 16, 17, 18, 20, 21, 22, 23 | 2, 8 | — |
+| 2 | 0 de 14 | 5, 9 | 12, 13, 14, 15, 19, 24, 25, 26, 27, 28, 29, 30 |
+| **Total** | **14 de 30** | **4** | **12** |
